@@ -19,12 +19,20 @@
 <p>In recipe 10.2 we implement transactional, "happy path" integration tests.</p>
 		]]></param-value>
 	</context-param>
-	
+        <!--
+        Inserted this to try and get the application to run on tomcat. Commented out the next commented line below
+        -->
+        <resource-ref>
+            <description>db connection</description>
+            <res-ref-name>sip10_it</res-ref-name>
+            <res-type>javax.sql.DataSource</res-type>
+            <res-auth>Container</res-auth>
+        </resource-ref> 
 	<!-- Configuration -->
 	<context-param>
 		<param-name>contextConfigLocation</param-name>
 		<param-value>
-			classpath:/spring/beans-datasource.xml
+			classpath:/spring/beans-datasource.xml <!--Temporarily ignoring this so I can try and run the app using tomcat-->
 			classpath:/spring/beans-service.xml
 		</param-value>
 	</context-param>

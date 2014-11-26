@@ -56,7 +56,7 @@ public class ContactControllerIT {
 	
 	@Value("#{viewNames.contactForm}")
 	private String expectedContactFormViewName;
-	
+          
 	@Value("#{viewNames.updateContactSuccess}")
 	private String expectedUpdateContactSuccessViewName;
 	
@@ -93,11 +93,11 @@ public class ContactControllerIT {
 		
 		// Exercise code
 		String viewName = controller.getContact(request, 1L, model);
-		
 		// Verify
 		assertEquals(expectedContactFormViewName, viewName);
 		
 		Contact contact = (Contact) model.asMap().get("contact");
+                System.out.println(contact.getFirstName()+"\t"+contact.getMiddleInitial()+"\t"+contact.getEmail());
 		assertNotNull(contact);
 		assertEquals((Long) 1L, contact.getId());
 		assertEquals("Robert", contact.getFirstName());
@@ -149,7 +149,9 @@ public class ContactControllerIT {
 		controller.getContact(request, 1L, model);
 		Contact contact = (Contact) model.asMap().get("contact");
 		assertNotNull(contact);
-		
+		System.out.println(expectedContactFormViewName);
+		System.out.println(expectedUpdateContactSuccessViewName);
+                System.out.println(expectedDeleteContactSuccessViewName);
 		// Exercise code
 		String viewName = controller.deleteContact(1L);
 		

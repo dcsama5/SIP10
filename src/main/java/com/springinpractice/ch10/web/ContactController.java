@@ -49,7 +49,7 @@ public class ContactController {
 	
 	@Value("#{viewNames.createContactSuccess}")
 	private String createContactSuccessViewName;
-	
+        
 	@Value("#{viewNames.updateContactSuccess}")
 	private String updateContactSuccessViewName;
 	
