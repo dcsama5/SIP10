@@ -7,6 +7,7 @@
  */
 package com.springinpractice.ch10.web;
 
+import com.springinpractice.ch10.dao.HbnContactDao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.fail;
@@ -33,6 +34,15 @@ import org.springframework.validation.BindingResult;
 
 import com.springinpractice.ch10.model.Contact;
 import com.springinpractice.web.ResourceNotFoundException;
+import org.hibernate.HibernateException;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.annotation.ExpectedException;
+import org.springframework.test.annotation.IfProfileValue;
+import org.springframework.test.annotation.Repeat;
+import org.springframework.test.annotation.Timed;
+import org.springframework.test.util.ReflectionTestUtils;
 //import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 // NOTE: SimpleJdbcTemplate is deprecated as of Spring 3.1. Prefer JdbcTemplate.
@@ -53,6 +63,8 @@ public class ContactControllerIT {
 	@Inject private ContactController controller;
 	@Inject private SessionFactory sessionFactory;
 	@Inject private DataSource dataSource;
+        @Inject private HbnContactDao contactDao;
+        private SessionFactory badSessionFactory;
 	
 	@Value("#{viewNames.contactForm}")
 	private String expectedContactFormViewName;
@@ -79,6 +91,10 @@ public class ContactControllerIT {
 		
 		this.request = new MockHttpServletRequest();
 		this.model = new ExtendedModelMap();
+                
+                this.badSessionFactory = mock(SessionFactory.class);
+                when(badSessionFactory.getCurrentSession())
+                        .thenThrow(new HibernateException("Problem getting current session"));
 	}
 	
 	@After
@@ -86,8 +102,38 @@ public class ContactControllerIT {
 		this.jdbcTemplate = null;
 		this.request = null;
 		this.model = null;
+                this.badSessionFactory = null;
 	}
-	
+	/**
+         * Seems that without DirtiesContext, the test would fail on occasion. 
+         * I think this is related to the use of DirtiesContext and what its supposed to do
+         * that is to reset the Spring Context at the end of the method. Without DirtiesContext
+         * the test would fail on occasion.
+         */
+        @Test
+        @ExpectedException(HibernateException.class)
+        @DirtiesContext
+        public void testGetContactWithBadSessionFactory() {
+            ReflectionTestUtils.setField(contactDao, "sessionFactory", badSessionFactory);
+            System.out.println(controller.printServiceType());
+            controller.getContact(request, 1L, model);
+        }
+        
+        @IfProfileValue(name = "environment", value = "ci")
+        @Repeat(20)
+        @Test(timeout = 200L)
+        public void testGetContactPerformanceSingleCall() {
+            controller.getContact(request, 1L, new ExtendedModelMap());
+        }
+        
+        @IfProfileValue(name ="environment", value = "ci")
+        @Repeat(20)
+        @Timed(millis = 2000)
+        @Test
+        public void testGetContactPerformanceMultipleCalls() {
+            controller.getContact(request, 1L, new ExtendedModelMap());
+        }
+        
 	@Test
 	public void testGetContactHappyPath() {
 		
@@ -95,7 +141,7 @@ public class ContactControllerIT {
 		String viewName = controller.getContact(request, 1L, model);
 		// Verify
 		assertEquals(expectedContactFormViewName, viewName);
-		
+		System.out.println("WTF HAPPY");
 		Contact contact = (Contact) model.asMap().get("contact");
                 System.out.println(contact.getFirstName()+"\t"+contact.getMiddleInitial()+"\t"+contact.getEmail());
 		assertNotNull(contact);

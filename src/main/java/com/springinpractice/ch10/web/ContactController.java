@@ -76,6 +76,10 @@ public class ContactController {
 		model.addAttribute(contactService.getContacts());
 		return contactListViewName;
 	}
+        
+        public String printServiceType() {
+           return contactService.getClass().toString();
+        }
 	
 	@RequestMapping(value = "", method = RequestMethod.POST)
 	public String createContact(

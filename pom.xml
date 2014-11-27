@@ -75,8 +75,13 @@ Code: https://github.com/springinpractice
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
 			</plugin>
-			<plugin>
+			<plugin>    
 				<artifactId>maven-failsafe-plugin</artifactId>
+                                <configuration>
+                                    <systemPropertyVariables>
+                                        <environment>${environment}</environment>
+                                    </systemPropertyVariables>
+                                </configuration>
 			</plugin>
 			<plugin>
 				<groupId>org.mortbay.jetty</groupId>

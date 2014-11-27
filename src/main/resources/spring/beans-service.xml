@@ -29,14 +29,14 @@ Code: https://github.com/springinpractice
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean"
 		p:dataSource-ref="dataSource"
-		p:packagesToScan="com.springinpractice.ch10.model">
-		
-		<property name="hibernateProperties">
+		p:packagesToScan="com.springinpractice.ch10.model"
+		p:hibernateProperties-ref="hibernateProperties">
+		<!--<property name="hibernateProperties">
 			<props>
 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5InnoDBDialect</prop>
 				<prop key="hibernate.show_sql">false</prop>
 			</props>
-		</property>
+		</property>-->
 	</bean>
 	
 	<bean id="transactionManager"
