@@ -14,34 +14,55 @@ Code: https://github.com/springinpractice
 ========================================================================================================================
 -->
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
-		http://www.springframework.org/schema/context
-		http://www.springframework.org/schema/context/spring-context-3.1.xsd
-		http://www.springframework.org/schema/jdbc
-		http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd">
+xmlns:context="http://www.springframework.org/schema/context"
+xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+xmlns:p="http://www.springframework.org/schema/p"
+xmlns:util="http://www.springframework.org/schema/util"
+xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+xsi:schemaLocation="
+http://www.springframework.org/schema/beans
+http://www.springframework.org/schema/beans/spring-beans-3.1.xsd
+http://www.springframework.org/schema/context
+http://www.springframework.org/schema/context/spring-context-3.1.xsd
+http://www.springframework.org/schema/jdbc
+http://www.springframework.org/schema/jdbc/spring-jdbc-3.1.xsd
+http://www.springframework.org/schema/util
+http://www.springframework.org/schema/util/spring-util-3.1.xsd">
 	
-	<context:property-placeholder location="classpath:/spring/sip10-it.properties" />
+		<jdbc:embedded-database id="dataSource">
+		<jdbc:script location="classpath:/hsql/sip10-schema-hsql.sql" />
+		<jdbc:script location="classpath:hsql/sip10-test-data-hsql.sql" />
+		</jdbc:embedded-database>
+		
+		<util:properties id="hibernateProperties">
+		<prop key="hibernate.dialect">org.hibernate.dialect.HSQLDialect</prop>
+		<prop key="hibernate.show_sql">true</prop>
+		</util:properties>
+		
+		
+		
+		<!--
+				This is part of the MySQL standalone database.
+				The above declarations use a HSQLDB embedded database 
+				-->
+				
+				
+	<!--<context:property-placeholder location="classpath:/spring/sip10-it.properties" />-->
 	
-	<bean id="dataSource"
+	<!--<bean id="dataSource"
 		class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close"
 		p:driverClassName="${dataSource.driverClassName}"
 		p:url="${dataSource.url}"
 		p:username="${dataSource.username}"
-		p:password="${dataSource.password}" />
+		p:password="${dataSource.password}" />-->
 
 	<!-- Get rid of the ignore-failures="DROPS" part if you don't want this to
 	     automatically reset your test database when you run integration tests.
 	     Or you can get rid of this config element altogether if you want to
 	     handle the test database manually. -->		
-	<jdbc:initialize-database data-source="dataSource">
+	<!--<jdbc:initialize-database data-source="dataSource">
 		<jdbc:script location="classpath:/mysql/sip10-schema-mysql.sql" />
 		<jdbc:script location="classpath:/mysql/sip10-test-data-mysql.sql" />
-	</jdbc:initialize-database>
+	</jdbc:initialize-database>-->
 </beans>
